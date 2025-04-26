@@ -1,6 +1,6 @@
 name: QuickUtils
 main: com.mrzzj.quickutils.Main
-version: 1.0-SNAPSHOT
+version: 1.1.0
 api-version: 1.16
 author: MRZZJ
 commands:
@@ -14,13 +14,16 @@ permissions:
     description: 允许使用虚拟工作台
     default: false
   quickutils.gui.enderchest:
-    description: 允许使用末影箱
+    description: 允许使用个人末影箱
     default: false
   quickutils.gui.enchant:
-    description: 允许使用附魔台
+    description: 允许使用附魔界面
     default: false
   quickutils.gui.anvil:
     description: 允许使用铁砧界面
+    default: false
+  quickutils.gui.grindstone:
+    description: 允许使用砂轮界面
     default: false
   quickutils.admin:
     description: 所有插件权限
@@ -30,6 +33,7 @@ permissions:
       quickutils.gui.enderchest: true
       quickutils.gui.enchant: true
       quickutils.gui.anvil: true  
+      quickutils.gui.grindstone: true
   quickutils.*:
     description: 通配所有功能权限
     default: false
@@ -38,3 +42,4 @@ permissions:
       quickutils.gui.enderchest: true
       quickutils.gui.enchant: true
       quickutils.gui.anvil: true
+      quickutils.gui.grindstone: true
