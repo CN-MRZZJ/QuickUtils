@@ -19,6 +19,9 @@ permissions:
   quickutils.gui.enchant:
     description: 允许使用附魔台
     default: false
+  quickutils.gui.anvil:
+    description: 允许使用铁砧界面
+    default: false
   quickutils.admin:
     description: 所有插件权限
     default: false
@@ -26,6 +29,7 @@ permissions:
       quickutils.gui.workbench: true
       quickutils.gui.enderchest: true
       quickutils.gui.enchant: true
+      quickutils.gui.anvil: true  
   quickutils.*:
     description: 通配所有功能权限
     default: false
@@ -33,3 +37,4 @@ permissions:
       quickutils.gui.workbench: true
       quickutils.gui.enderchest: true
       quickutils.gui.enchant: true
+      quickutils.gui.anvil: true

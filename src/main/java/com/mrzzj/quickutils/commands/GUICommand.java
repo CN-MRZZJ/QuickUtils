@@ -53,6 +53,12 @@ public class GUICommand implements CommandExecutor {
                 player.sendMessage("§a已打开附魔台");
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f);
                 break;
+            case "anvil":
+                // 新增铁砧界面
+                player.openInventory(Bukkit.createInventory(player, InventoryType.ANVIL));
+                player.sendMessage("§a已打开铁砧界面");
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
+                break;
             default:
                 sendUsage(player);
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1.0f, 1.0f);
@@ -68,6 +74,7 @@ public class GUICommand implements CommandExecutor {
         player.sendMessage(ChatColor.AQUA + "  workbench - 虚拟工作台");
         player.sendMessage(ChatColor.AQUA + "  enderchest - 个人末影箱");
         player.sendMessage(ChatColor.AQUA + "  enchant - 附魔界面");
+        player.sendMessage(ChatColor.AQUA + "  anvil - 铁砧界面");
         player.sendMessage(ChatColor.GOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         player.playSound(
                 player.getLocation(),
@@ -83,6 +90,7 @@ public class GUICommand implements CommandExecutor {
             case "workbench" -> ChatColor.DARK_GREEN + "虚拟工作台";
             case "enderchest" -> ChatColor.DARK_PURPLE + "末影箱";
             case "enchant" -> ChatColor.BLUE + "附魔台";
+            case "anvil" -> ChatColor.DARK_GRAY + "铁砧";
             default -> ChatColor.RED + "未知界面";
         };
     }
