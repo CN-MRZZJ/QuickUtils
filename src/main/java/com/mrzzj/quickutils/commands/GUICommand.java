@@ -7,11 +7,15 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
-public class GUICommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class GUICommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
@@ -64,6 +68,15 @@ public class GUICommand implements CommandExecutor {
                 player.openInventory(Bukkit.createInventory(player, InventoryType.GRINDSTONE));
                 player.sendMessage("§a已打开砂轮界面");
                 player.playSound(player.getLocation(), Sound.BLOCK_GRINDSTONE_USE, 1.0f, 1.0f);
+            case "loom":
+                player.openInventory(Bukkit.createInventory(player, InventoryType.LOOM));
+                player.sendMessage("§a已打开织布机");
+                player.playSound(player.getLocation(), Sound.BLOCK_LOOM_USE, 1.0f, 1.0f);
+                break;
+            case "cartography_table":
+                player.openInventory(Bukkit.createInventory(player, InventoryType.CARTOGRAPHY_TABLE));
+                player.sendMessage("§a已打开制图台");
+                player.playSound(player.getLocation(), Sound.BLOCK_CARTOGRAPHY_TABLE_USE, 1.0f, 1.0f);
                 break;
             default:
                 sendUsage(player);
@@ -82,6 +95,8 @@ public class GUICommand implements CommandExecutor {
         player.sendMessage(ChatColor.AQUA + "  enchant - 附魔界面");
         player.sendMessage(ChatColor.AQUA + "  anvil - 铁砧界面");
         player.sendMessage(ChatColor.AQUA + "  grindstone - 砂轮界面");
+        player.sendMessage(ChatColor.AQUA + "  loom - 织布机");
+        player.sendMessage(ChatColor.AQUA + "  cartography_table - 制图台");
         player.sendMessage(ChatColor.GOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         player.playSound(
                 player.getLocation(),
@@ -99,9 +114,26 @@ public class GUICommand implements CommandExecutor {
             case "enchant" -> ChatColor.BLUE + "附魔台";
             case "anvil" -> ChatColor.DARK_GRAY + "铁砧";
             case "grindstone" -> ChatColor.GRAY + "砂轮";
+            case "loom" -> ChatColor.LIGHT_PURPLE + "织布机";
+            case "cartography_table" -> ChatColor.DARK_AQUA + "制图台";
             default -> ChatColor.RED + "未知界面";
         };
     }
 
-    // 其他方法保持不变...
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            String[] validTypes = {
+                "workbench", "enderchest", "enchant", "anvil", 
+                "grindstone", "loom", "cartography_table"
+            };
+            for (String type : validTypes) {
+                if (type.startsWith(args[0].toLowerCase())) {
+                    completions.add(type);
+                }
+            }
+        }
+        return completions;
+    }
 }
