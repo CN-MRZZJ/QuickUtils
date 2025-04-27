@@ -68,15 +68,14 @@ public class GUICommand implements CommandExecutor, TabCompleter {
                 player.openInventory(Bukkit.createInventory(player, InventoryType.GRINDSTONE));
                 player.sendMessage("§a已打开砂轮界面");
                 player.playSound(player.getLocation(), Sound.BLOCK_GRINDSTONE_USE, 1.0f, 1.0f);
+                break;
             case "loom":
                 player.openInventory(Bukkit.createInventory(player, InventoryType.LOOM));
                 player.sendMessage("§a已打开织布机");
-                player.playSound(player.getLocation(), Sound.BLOCK_LOOM_USE, 1.0f, 1.0f);
                 break;
             case "cartography_table":
-                player.openInventory(Bukkit.createInventory(player, InventoryType.CARTOGRAPHY_TABLE));
+                player.openInventory(Bukkit.createInventory(player, InventoryType.CARTOGRAPHY));
                 player.sendMessage("§a已打开制图台");
-                player.playSound(player.getLocation(), Sound.BLOCK_CARTOGRAPHY_TABLE_USE, 1.0f, 1.0f);
                 break;
             default:
                 sendUsage(player);
