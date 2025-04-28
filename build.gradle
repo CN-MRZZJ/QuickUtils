@@ -16,8 +16,8 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     compileOnly 'org.spigotmc:spigot-api:1.21.5-R0.1-SNAPSHOT'
-
-
+    // 添加 org.json 依赖
+    implementation 'org.json:json:20231013'
 }
 
 test {
