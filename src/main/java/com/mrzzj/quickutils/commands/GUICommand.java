@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -40,8 +41,9 @@ public class GUICommand implements CommandExecutor, TabCompleter {
 
         switch (guiType) {
             case "workbench":
-                // 新版工作台打开方式
-                player.openInventory(Bukkit.createInventory(player, InventoryType.WORKBENCH));
+                // 创建带有特殊标识的工作台
+                Inventory workbench = Bukkit.createInventory(player, InventoryType.WORKBENCH, "QuickUtils Workbench");
+                player.openInventory(workbench);
                 player.sendMessage("§a已打开虚拟工作台");
                 player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1.0f, 1.0f);
                 break;
@@ -58,8 +60,9 @@ public class GUICommand implements CommandExecutor, TabCompleter {
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f);
                 break;
             case "anvil":
-                // 新增铁砧界面
-                player.openInventory(Bukkit.createInventory(player, InventoryType.ANVIL));
+                // 创建带有标识的铁砧界面
+                Inventory anvil = Bukkit.createInventory(player, InventoryType.ANVIL, "QuickUtils Anvil");
+                player.openInventory(anvil);
                 player.sendMessage("§a已打开铁砧界面");
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
                 break;
@@ -76,6 +79,16 @@ public class GUICommand implements CommandExecutor, TabCompleter {
             case "cartography_table":
                 player.openInventory(Bukkit.createInventory(player, InventoryType.CARTOGRAPHY));
                 player.sendMessage("§a已打开制图台");
+                break;
+            case "smithing":
+                player.openInventory(Bukkit.createInventory(player, InventoryType.SMITHING));
+                player.sendMessage("§a已打开锻造台界面");
+                player.playSound(
+                    player.getLocation(), 
+                    Sound.BLOCK_SMITHING_TABLE_USE, 
+                    1.0f,  // 音量
+                    1.0f   // 音高
+                );
                 break;
             default:
                 sendUsage(player);
@@ -96,6 +109,7 @@ public class GUICommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.AQUA + "  grindstone - 砂轮界面");
         player.sendMessage(ChatColor.AQUA + "  loom - 织布机");
         player.sendMessage(ChatColor.AQUA + "  cartography_table - 制图台");
+        player.sendMessage(ChatColor.AQUA + "  smithing - 锻造台界面");
         player.sendMessage(ChatColor.GOLD + "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         player.playSound(
                 player.getLocation(),
@@ -115,6 +129,7 @@ public class GUICommand implements CommandExecutor, TabCompleter {
             case "grindstone" -> ChatColor.GRAY + "砂轮";
             case "loom" -> ChatColor.LIGHT_PURPLE + "织布机";
             case "cartography_table" -> ChatColor.DARK_AQUA + "制图台";
+            case "smithing" -> ChatColor.GOLD + "锻造台";
             default -> ChatColor.RED + "未知界面";
         };
     }
@@ -124,8 +139,8 @@ public class GUICommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             String[] validTypes = {
-                "workbench", "enderchest", "enchant", "anvil", 
-                "grindstone", "loom", "cartography_table"
+                "workbench", "enderchest", "enchant", "anvil",
+                "grindstone", "loom", "cartography_table", "smithing"
             };
             for (String type : validTypes) {
                 if (type.startsWith(args[0].toLowerCase())) {
