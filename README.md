@@ -1,7 +1,7 @@
 # QuickUtils - Minecraft 实用工具插件
 
 ![GitHub](https://img.shields.io/badge/Minecraft-1.21.5-blueviolet)
-![Version](https://img.shields.io/badge/Version-1.2.0-success)
+![Version](https://img.shields.io/badge/Version-1.3.0-success)
 
 ## 功能特性
 - 📦 原版GUI快捷访问
