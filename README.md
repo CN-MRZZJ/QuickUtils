@@ -17,7 +17,7 @@
 - 🎵 操作音效反馈
 
 ## 安装方法
-1. 将编译后的 `QuickUtils-1.2.0.jar` 放入服务端 `plugins` 目录
+1. 将编译后的 `QuickUtils-1.3.0.jar` 放入服务端 `plugins` 目录
 2. 重启/重载服务器
 3. 使用指令 `/qu help` 查看帮助
 
