@@ -2,18 +2,18 @@ package com.mrzzj.quickutils;
 
 import com.mrzzj.quickutils.commands.GUICommand;
 import com.mrzzj.quickutils.listeners.AnvilListener;
+import com.mrzzj.quickutils.listeners.CartographyTableListener;
 import com.mrzzj.quickutils.listeners.WorkbenchListener;
 import com.mrzzj.quickutils.listeners.GrindstoneListener;
+import com.mrzzj.quickutils.listeners.LoomListener;
 import com.mrzzj.quickutils.listeners.SmithingTableListener;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import org.json.JSONObject;
-import com.mrzzj.quickutils.VersionChecker;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends JavaPlugin {
     private YamlConfiguration config;
@@ -25,10 +25,7 @@ public class Main extends JavaPlugin {
         loadConfig();
 
         // 注册监听器
-        getServer().getPluginManager().registerEvents(new WorkbenchListener(), this);
-        getServer().getPluginManager().registerEvents(new AnvilListener(), this);
-        getServer().getPluginManager().registerEvents(new GrindstoneListener(), this);
-        getServer().getPluginManager().registerEvents(new SmithingTableListener(), this);
+        registerListeners();
         
         // 注册命令
         GUICommand guiCommand = new GUICommand();
@@ -47,6 +44,21 @@ public class Main extends JavaPlugin {
         }
     }
 
+    private void registerListeners() {
+        List<Listener> listeners = new ArrayList<>();
+        listeners.add(new WorkbenchListener());
+        listeners.add(new AnvilListener());
+        listeners.add(new GrindstoneListener());
+        listeners.add(new SmithingTableListener());
+        listeners.add(new LoomListener());
+        listeners.add(new CartographyTableListener());
+
+        PluginManager pluginManager = getServer().getPluginManager();
+        for (Listener listener : listeners) {
+            pluginManager.registerEvents(listener, this);
+        }
+    }
+
     private void loadConfig() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -59,5 +71,4 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         getLogger().info("QuickUtils 已安全关闭");
     }
-
 }
