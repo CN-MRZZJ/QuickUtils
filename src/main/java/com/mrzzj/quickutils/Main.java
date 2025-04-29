@@ -3,6 +3,8 @@ package com.mrzzj.quickutils;
 import com.mrzzj.quickutils.commands.GUICommand;
 import com.mrzzj.quickutils.listeners.AnvilListener;
 import com.mrzzj.quickutils.listeners.WorkbenchListener;
+import com.mrzzj.quickutils.listeners.GrindstoneListener;
+import com.mrzzj.quickutils.listeners.SmithingTableListener;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import java.net.URI;
@@ -18,6 +20,8 @@ public class Main extends JavaPlugin {
         // 注册监听器
         getServer().getPluginManager().registerEvents(new WorkbenchListener(), this);
         getServer().getPluginManager().registerEvents(new AnvilListener(), this);
+        getServer().getPluginManager().registerEvents(new GrindstoneListener(), this);
+        getServer().getPluginManager().registerEvents(new SmithingTableListener(), this);
         
         // 注册命令
         GUICommand guiCommand = new GUICommand();

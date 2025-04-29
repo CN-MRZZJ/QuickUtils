@@ -81,7 +81,9 @@ public class GUICommand implements CommandExecutor, TabCompleter {
                 player.sendMessage("§a已打开制图台");
                 break;
             case "smithing":
-                player.openInventory(Bukkit.createInventory(player, InventoryType.SMITHING));
+                // 创建带有标识的锻造台界面
+                Inventory smithing = Bukkit.createInventory(player, InventoryType.SMITHING, "QuickUtils Smithing Table");
+                player.openInventory(smithing);
                 player.sendMessage("§a已打开锻造台界面");
                 player.playSound(
                     player.getLocation(), 

@@ -1,6 +1,6 @@
 name: QuickUtils
 main: com.mrzzj.quickutils.Main
-version: 1.4.0
+version: 1.4.1
 api-version: 1.16
 author: MRZZJ
 commands:
