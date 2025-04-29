@@ -3,6 +3,7 @@ package com.mrzzj.quickutils.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,6 +12,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,6 +29,19 @@ public class GUICommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 0) {
+            // 添加权限检查
+            if (!player.hasPermission("quickutils.gui.menu")) {
+                player.sendMessage("§c你没有使用 /qu 命令打开综合界面的权限");
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+                return true;
+            }
+            // 新增判断：如果输入 /qu 命令，打开新的箱子 GUI
+            openNewChestGUI(player);
+            return true;
+        }
+
+        // 处理 qu help 命令
+        if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
             sendUsage(player);
             return true;
         }
@@ -134,6 +150,86 @@ public class GUICommand implements CommandExecutor, TabCompleter {
             case "smithing" -> ChatColor.GOLD + "锻造台";
             default -> ChatColor.RED + "未知界面";
         };
+    }
+
+    // 新增方法：创建新的箱子 GUI
+    private void openNewChestGUI(Player player) {
+        // 创建一个 6 行的箱子 GUI
+        Inventory chestGUI = Bukkit.createInventory(player, 6 * 9, "QuickUtils 综合界面");
+
+        // 填充周围一圈玻璃板
+        ItemStack glassPane = new ItemStack(Material.GLASS_PANE);
+        ItemMeta glassMeta = glassPane.getItemMeta();
+        glassMeta.setDisplayName(" ");
+        glassPane.setItemMeta(glassMeta);
+
+        // 顶部和底部
+        for (int i = 0; i < 9; i++) {
+            chestGUI.setItem(i, glassPane);
+            chestGUI.setItem(45 + i, glassPane);
+        }
+
+        // 左侧和右侧
+        for (int i = 1; i < 5; i++) {
+            chestGUI.setItem(i * 9, glassPane);
+            chestGUI.setItem(i * 9 + 8, glassPane);
+        }
+
+        // 中间放置各种 GUI 对应的物品
+        String[] guiTypes = {
+            "workbench", "enderchest", "enchant", "anvil",
+            "grindstone", "loom", "cartography_table", "smithing"
+        };
+        int[] slots = {11, 12, 13, 14, 15, 20, 21, 22};
+
+        for (int i = 0; i < guiTypes.length; i++) {
+            String type = guiTypes[i];
+            ItemStack item = getItemForGUI(type);
+            if (item != null) {
+                chestGUI.setItem(slots[i], item);
+            }
+        }
+
+        player.openInventory(chestGUI);
+    }
+
+    // 新增方法：根据 GUI 类型获取对应的物品
+    private ItemStack getItemForGUI(String type) {
+        ItemStack item = null;
+        switch (type) {
+            case "workbench":
+                item = new ItemStack(Material.CRAFTING_TABLE);
+                break;
+            case "enderchest":
+                item = new ItemStack(Material.ENDER_CHEST);
+                break;
+            case "enchant":
+                item = new ItemStack(Material.ENCHANTING_TABLE);
+                break;
+            case "anvil":
+                item = new ItemStack(Material.ANVIL);
+                break;
+            case "grindstone":
+                item = new ItemStack(Material.GRINDSTONE);
+                break;
+            case "loom":
+                item = new ItemStack(Material.LOOM);
+                break;
+            case "cartography_table":
+                item = new ItemStack(Material.CARTOGRAPHY_TABLE);
+                break;
+            case "smithing":
+                item = new ItemStack(Material.SMITHING_TABLE);
+                break;
+        }
+
+        if (item != null) {
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(getGUIName(type));
+            item.setItemMeta(meta);
+        }
+
+        return item;
     }
 
     @Override
