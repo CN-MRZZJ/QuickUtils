@@ -1,0 +1,4 @@
+# 检查 GitHub 版本的间隔时间（单位：秒）
+versionCheckInterval: 7200
+# 启用版本检查功能
+enableVersionCheck: true

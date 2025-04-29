@@ -5,18 +5,25 @@ import com.mrzzj.quickutils.listeners.AnvilListener;
 import com.mrzzj.quickutils.listeners.WorkbenchListener;
 import com.mrzzj.quickutils.listeners.GrindstoneListener;
 import com.mrzzj.quickutils.listeners.SmithingTableListener;
-
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import java.io.File;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.json.JSONObject;
+import com.mrzzj.quickutils.VersionChecker;
 
 public class Main extends JavaPlugin {
+    private YamlConfiguration config;
+    private VersionChecker versionChecker;
 
     @Override
     public void onEnable() {
+        // 加载配置文件
+        loadConfig();
+
         // 注册监听器
         getServer().getPluginManager().registerEvents(new WorkbenchListener(), this);
         getServer().getPluginManager().registerEvents(new AnvilListener(), this);
@@ -30,38 +37,27 @@ public class Main extends JavaPlugin {
         // 简化启动日志
         getLogger().info("QuickUtils v" + getDescription().getVersion() + " 已激活");
 
-        // 启动定时更新检查任务，每 2 小时执行一次（20 ticks = 1 秒，7200 秒 = 2 小时）
-        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkGitHubReleaseVersion, 0L, 20L * 7200);
+        // 初始化 VersionChecker
+        versionChecker = new VersionChecker(this, "CN-MRZZJ", "QuickUtils");
+
+        // 根据配置启动定时更新检查任务
+        if (config.getBoolean("enableVersionCheck")) {
+            long interval = config.getLong("versionCheckInterval");
+            getServer().getScheduler().runTaskTimerAsynchronously(this, versionChecker::checkGitHubReleaseVersion, 0L, 20L * interval);
+        }
     }
 
-    private void checkGitHubReleaseVersion() {
-        try {
-            // 替换为你的 GitHub 仓库信息
-            String repoOwner = "CN-MRZZJ";
-            String repoName = "QuickUtils";
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases/latest"))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject jsonResponse = new JSONObject(response.body());
-            String latestVersion = jsonResponse.getString("tag_name");
-            String currentVersion = getDescription().getVersion();
-
-            if (!currentVersion.equals(latestVersion)) {
-                getLogger().info("发现新版本: " + latestVersion + "，当前版本: " + currentVersion);
-            } else {
-                getLogger().info("当前已是最新版本: " + currentVersion);
-            }
-
-        } catch (Exception e) {
-            getLogger().warning("检查 GitHub 版本时出错: " + e.getMessage());
+    private void loadConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            saveResource("config.yml", false);
         }
+        config = YamlConfiguration.loadConfiguration(configFile);
     }
 
     @Override
     public void onDisable() {
         getLogger().info("QuickUtils 已安全关闭");
     }
+
 }
