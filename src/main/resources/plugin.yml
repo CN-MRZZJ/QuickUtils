@@ -1,8 +1,9 @@
 name: QuickUtils
 main: com.mrzzj.quickutils.Main
-version: 1.4.2
+version: 1.4.3
 api-version: 1.16
 author: MRZZJ
+
 commands:
   quickutils:
     description: 打开原版GUI界面
@@ -10,6 +11,36 @@ commands:
     aliases: [qu]
 
 permissions:
+  # 通用管理权限
+  quickutils.admin:
+    description: 所有插件权限
+    default: op
+    children:
+      quickutils.*: true
+
+  # 通配权限
+  quickutils.*:
+    description: 通配所有功能权限
+    default: op
+    children:
+      quickutils.gui.*: true
+      quickutils.bind: true
+
+  # GUI 相关权限
+  quickutils.gui.*:
+    description: 通配所有GUI相关权限
+    default: op
+    children:
+      quickutils.gui.workbench: true
+      quickutils.gui.enderchest: true
+      quickutils.gui.enchant: true
+      quickutils.gui.anvil: true
+      quickutils.gui.grindstone: true
+      quickutils.gui.loom: true
+      quickutils.gui.cartography_table: true
+      quickutils.gui.smithing: true
+      quickutils.gui.menu: true
+
   quickutils.gui.workbench:
     description: 允许使用虚拟工作台
     default: op
@@ -37,29 +68,8 @@ permissions:
   quickutils.gui.menu:
     description: 允许使用 /qu 命令打开综合界面
     default: true
-  quickutils.admin:
-    description: 所有插件权限
+
+  # 绑定命令权限
+  quickutils.bind:
+    description: 允许使用 qu bind 命令
     default: op
-    children:
-      quickutils.gui.workbench: true
-      quickutils.gui.enderchest: true
-      quickutils.gui.enchant: true
-      quickutils.gui.anvil: true
-      quickutils.gui.grindstone: true
-      quickutils.gui.loom: true
-      quickutils.gui.cartography_table: true
-      quickutils.gui.smithing: true
-      quickutils.gui.menu: true
-  quickutils.*:
-    description: 通配所有功能权限
-    default: op
-    children:
-      quickutils.gui.workbench: true
-      quickutils.gui.enderchest: true
-      quickutils.gui.enchant: true
-      quickutils.gui.anvil: true
-      quickutils.gui.grindstone: true
-      quickutils.gui.loom: true
-      quickutils.gui.cartography_table: true
-      quickutils.gui.smithing: true
-      quickutils.gui.menu: true

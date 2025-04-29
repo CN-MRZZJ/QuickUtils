@@ -3,8 +3,10 @@ package com.mrzzj.quickutils.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,10 +18,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import com.mrzzj.quickutils.EnchantmentTableBinder;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GUICommand implements CommandExecutor, TabCompleter {
+
+    // 新增方法：检查玩家是否有指定权限
+    private boolean checkPermission(Player player, String permission) {
+        if (!player.hasPermission(permission)) {
+            player.sendMessage("§c你没有使用此功能的权限");
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
@@ -28,64 +42,78 @@ public class GUICommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length == 0) {
-            // 添加权限检查
-            if (!player.hasPermission("quickutils.gui.menu")) {
-                player.sendMessage("§c你没有使用 /qu 命令打开综合界面的权限");
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+        // 处理 bind 和 help 命令
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("bind")) {
+                if (!checkPermission(player, "quickutils.bind")) {
+                    return true;
+                }
+                EnchantmentTableBinder.bindEnchantmentTable(player);
+                return true;
+            } else if (args[0].equalsIgnoreCase("help")) {
+                sendUsage(player);
                 return true;
             }
-            // 新增判断：如果输入 /qu 命令，打开新的箱子 GUI
-            openNewChestGUI(player);
-            return true;
         }
 
-        // 处理 qu help 命令
-        if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
-            sendUsage(player);
+        // 处理 GUI 相关命令
+        if (args.length == 0) {
+            if (!checkPermission(player, "quickutils.gui.menu")) {
+                return true;
+            }
+            openNewChestGUI(player);
             return true;
         }
 
         String guiType = args[0].toLowerCase();
         String permission = "quickutils.gui." + guiType;
 
-        if (!player.hasPermission(permission)) {
-            player.sendMessage("§c你没有使用 " + getGUIName(guiType) + " 的权限");
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+        if (!checkPermission(player, permission)) {
             return true;
         }
 
+        handleGUICommands(player, guiType);
+        return true;
+    }
+
+    private void handleGUICommands(Player player, String guiType) {
         switch (guiType) {
             case "workbench":
-                // 创建带有特殊标识的工作台
                 Inventory workbench = Bukkit.createInventory(player, InventoryType.WORKBENCH, "QuickUtils Workbench");
                 player.openInventory(workbench);
                 player.sendMessage("§a已打开虚拟工作台");
                 player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1.0f, 1.0f);
                 break;
             case "enderchest":
-                // 末影箱保持原方式
                 player.openInventory(player.getEnderChest());
                 player.sendMessage("§a已打开末影箱");
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_STARE, 0.8f, 1.2f);
                 break;
             case "enchant":
-                // 新版附魔台打开方式
-                player.openInventory(Bukkit.createInventory(player, InventoryType.ENCHANTING));
-                player.sendMessage("§a已打开附魔台");
-                player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f);
+                // 获取绑定的附魔台位置
+                Location location = EnchantmentTableBinder.getEnchantmentTableLocation(player.getUniqueId().toString());
+                if (location != null) {
+                    Block block = location.getBlock();
+                    if (block.getType() == Material.ENCHANTING_TABLE) {
+                        // 模拟右键点击方块
+                        player.performCommand("execute as " + player.getName() + " at @s run interact entity " + block.getLocation().toVector().toString() + " right");
+                        player.sendMessage("§a已打开绑定的附魔台");
+                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f);
+                        return;
+                    }
+                    player.sendMessage("§a绑定位置方块非附魔台，请重新绑定");
+                }
+                player.sendMessage("§a你没有绑定任何附魔台");
                 break;
             case "anvil":
-                // 创建带有标识的铁砧界面
                 Inventory anvil = Bukkit.createInventory(player, InventoryType.ANVIL, "QuickUtils Anvil");
                 player.openInventory(anvil);
-                player.sendMessage("§a已打开铁砧界面");
+                player.sendMessage("§a已打开铁砧");
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
                 break;
             case "grindstone":
-                // 新增砂轮界面
                 player.openInventory(Bukkit.createInventory(player, InventoryType.GRINDSTONE));
-                player.sendMessage("§a已打开砂轮界面");
+                player.sendMessage("§a已打开砂轮");
                 player.playSound(player.getLocation(), Sound.BLOCK_GRINDSTONE_USE, 1.0f, 1.0f);
                 break;
             case "loom":
@@ -97,10 +125,9 @@ public class GUICommand implements CommandExecutor, TabCompleter {
                 player.sendMessage("§a已打开制图台");
                 break;
             case "smithing":
-                // 创建带有标识的锻造台界面
                 Inventory smithing = Bukkit.createInventory(player, InventoryType.SMITHING, "QuickUtils Smithing Table");
                 player.openInventory(smithing);
-                player.sendMessage("§a已打开锻造台界面");
+                player.sendMessage("§a已打开锻造台");
                 player.playSound(
                     player.getLocation(), 
                     Sound.BLOCK_SMITHING_TABLE_USE, 
@@ -111,9 +138,7 @@ public class GUICommand implements CommandExecutor, TabCompleter {
             default:
                 sendUsage(player);
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1.0f, 1.0f);
-                return true;
         }
-        return true;
     }
     // sendUsage 方法：发送命令使用帮助
     private void sendUsage(Player player) {
@@ -235,14 +260,27 @@ public class GUICommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> completions = new ArrayList<>();
-        if (args.length == 1) {
-            String[] validTypes = {
-                "workbench", "enderchest", "enchant", "anvil",
-                "grindstone", "loom", "cartography_table", "smithing"
-            };
-            for (String type : validTypes) {
-                if (type.startsWith(args[0].toLowerCase())) {
-                    completions.add(type);
+        if (sender instanceof Player player) {
+            if (args.length == 1) {
+                // 检查是否有打开菜单的权限
+                if (player.hasPermission("quickutils.gui.menu")) {
+                    String[] guiTypes = {
+                        "workbench", "enderchest", "enchant", "anvil",
+                        "grindstone", "loom", "cartography_table", "smithing"
+                    };
+                    for (String type : guiTypes) {
+                        if (type.startsWith(args[0].toLowerCase())) {
+                            completions.add(type);
+                        }
+                    }
+                }
+                // 检查是否有 bind 命令的权限
+                if (player.hasPermission("quickutils.bind") && "bind".startsWith(args[0].toLowerCase())) {
+                    completions.add("bind");
+                }
+                // 检查是否有查看帮助的权限，这里可以根据实际情况添加权限节点
+                if ("help".startsWith(args[0].toLowerCase())) {
+                    completions.add("help");
                 }
             }
         }
