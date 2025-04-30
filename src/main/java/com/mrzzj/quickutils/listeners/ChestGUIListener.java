@@ -31,11 +31,17 @@ public class ChestGUIListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         // 因为 getTitle() 方法对 Inventory 类型未定义，在 Bukkit 中可以使用 getView().getTitle() 来获取标题
-if (!event.getView().getTitle().equals("QuickUtils 综合界面")) {
+        if (!event.getView().getTitle().equals("QuickUtils 综合界面")) {
             return;
         }
 
+        // 确保事件被取消，防止物品被拿出
         event.setCancelled(true);
+
+        // 检查点击的行为是否为获取物品
+        if (event.getAction().name().contains("TAKE")) {
+            return;
+        }
 
         ItemStack clickedItem = event.getCurrentItem();
         if (clickedItem == null) {
